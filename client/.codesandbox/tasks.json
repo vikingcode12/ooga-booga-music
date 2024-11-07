@@ -12,6 +12,14 @@
     "install": {
       "name": "install dependencies",
       "command": "pnpm install"
+    },
+    "Development": {
+      "name": "Development",
+      "command": "pnpm dev",
+      "runAtStart": true,
+      "preview": {
+        "port": 5173
+      }
     }
   }
 }
