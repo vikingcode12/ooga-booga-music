@@ -1,6 +1,7 @@
 {
   "name": "react-typescript",
   "version": "1.0.0",
+  "type": "module",
   "description": "React and TypeScript example starter project",
   "keywords": [
     "typescript",
@@ -9,20 +10,24 @@
   ],
   "main": "src/index.tsx",
   "dependencies": {
+    "@tanstack/react-query": "^5.59.20",
+    "partysocket": "1.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@types/react": "18.2.38",
+    "@types/react": "^18.2.38",
     "@types/react-dom": "18.2.15",
+    "@vitejs/plugin-react": "^4.2.1",
+    "partykit": "0.0.111",
     "typescript": "4.4.4",
-    "vite": "^5.0.11",
-    "@vitejs/plugin-react": "^4.2.1"
+    "vite": "^5.0.11"
   },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "partykit dev"
   },
   "browserslist": [
     ">0.2%",
