@@ -12,7 +12,7 @@ export function Search({
     setVideoId: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
     const [videoSearch, setVideoSearch] = useState("");
-    console.log(videoSearch)
+    console.log(videoSearch);
 
     const { isPending, error, data } = useQuery<youtubeAPI>({
         queryKey: ["videoSearch", videoSearch],
@@ -23,7 +23,7 @@ export function Search({
                         part: "snippet",
                         q: videoSearch,
                         maxResults: "25",
-                        key: "AIzaSyAWzPr2cdubXGfUIYMN8-g5HyMDgq9wS5U",
+                        key: "AIzaSyCH6iOA2Mmbl8tPzcqKQ_oI6p3xatVnUbs",
                         type: "video"
                     })
             ).then(res => res.json()),
@@ -31,6 +31,8 @@ export function Search({
     });
 
     if (error) return "An error has occurred: " + error.message;
+
+    console.log(data);
 
     return (
         <>
@@ -41,27 +43,20 @@ export function Search({
                     setVideoSearch(event.target.value);
                 }}
             />
+            {/* Make a skeleton for no data or loading data */}
             {isPending
                 ? [...Array(10).keys()].map(item => (
-                    <Fragment key={item.id.videoId}>
-                        <h1>{item.snippet.title}</h1>
-                        <p>{item.snippet.description}</p>
-                        <button
-                            key={item.id.videoId}
-                            onClick={() => setVideoId(item.id.videoId)}
-                        >
-                            honjk
-                        </button>
-                    </Fragment>
-                ))
-                : data.items.map(item => (
+                      <Fragment key={item}>
+                          <h1>Load</h1>
+                          <p>Load Desc</p>
+                          <button>Load Button</button>
+                      </Fragment>
+                  ))
+                : data.items?.map(item => (
                       <Fragment key={item.id.videoId}>
                           <h1>{item.snippet.title}</h1>
                           <p>{item.snippet.description}</p>
-                          <button
-                              key={item.id.videoId}
-                              onClick={() => setVideoId(item.id.videoId)}
-                          >
+                          <button onClick={() => setVideoId(item.id.videoId)}>
                               honjk
                           </button>
                       </Fragment>
