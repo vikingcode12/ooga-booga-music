@@ -27,6 +27,7 @@ export function Search({
                         type: "video"
                     })
             ).then(res => res.json()),
+        enabled: videoSearch !== "" // This is so when videoSearch is blank to stop query from running
     });
 
     if (error) return "An error has occurred: " + error.message;
@@ -41,7 +42,18 @@ export function Search({
                 }}
             />
             {isPending
-                ? "Loading..."
+                ? [...Array(10).keys()].map(item => (
+                    <Fragment key={item.id.videoId}>
+                        <h1>{item.snippet.title}</h1>
+                        <p>{item.snippet.description}</p>
+                        <button
+                            key={item.id.videoId}
+                            onClick={() => setVideoId(item.id.videoId)}
+                        >
+                            honjk
+                        </button>
+                    </Fragment>
+                ))
                 : data.items.map(item => (
                       <Fragment key={item.id.videoId}>
                           <h1>{item.snippet.title}</h1>
