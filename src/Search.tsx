@@ -2,9 +2,9 @@ import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
-import type { youtubeAPI } from "./types";
-
 import { Fragment } from "react";
+
+import type { youtubeAPI } from "./types";
 
 export function Search({
     setVideoId
@@ -12,7 +12,7 @@ export function Search({
     setVideoId: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
     const [videoSearch, setVideoSearch] = useState("");
-    console.log(videoSearch);
+    const resultCount = 3;
 
     const { isPending, error, data } = useQuery<youtubeAPI>({
         queryKey: ["videoSearch", videoSearch],
@@ -22,8 +22,8 @@ export function Search({
                     new URLSearchParams({
                         part: "snippet",
                         q: videoSearch,
-                        maxResults: "25",
-                        key: "AIzaSyCH6iOA2Mmbl8tPzcqKQ_oI6p3xatVnUbs",
+                        maxResults: resultCount.toString(),
+                        key: "AIzaSyAsZGb-rqWdVaVW1mD7sS8nNi-UBI53V6g",
                         type: "video"
                     })
             ).then(res => res.json()),
@@ -31,8 +31,6 @@ export function Search({
     });
 
     if (error) return "An error has occurred: " + error.message;
-
-    console.log(data);
 
     return (
         <>
@@ -45,7 +43,7 @@ export function Search({
             />
             {/* Make a skeleton for no data or loading data */}
             {isPending
-                ? [...Array(10).keys()].map(item => (
+                ? [...Array(resultCount).keys()].map(item => (
                       <Fragment key={item}>
                           <h1>Load</h1>
                           <p>Load Desc</p>

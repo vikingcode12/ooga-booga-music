@@ -1,23 +1,24 @@
-import type { PartyKitServer } from "partykit/server";
+import type * as Party from "partykit/server";
 
-export default {
-    async onConnect(ws, room) {
-        // A websocket just connected!
-        console.log(
-            `Connected:
-            id: ${ws.id}
-            room: ${room.id}`
-        );
+export default class Server implements Party.Server {
+    constructor(readonly room: Party.Room) {}
 
-        // let's send a message to the connection
-        ws.send("hello from server");
-    },
-    onMessage(message, ws, room) {
-        console.log(`connection ${ws.id} sent message: ${message}`);
-        room.broadcast(
-            `${ws.id}: ${message}`,
-            // ...except for the connection it came from
-            [ws.id]
-        );
+    async onStart() {
+        console.log("start");
     }
-} satisfies PartyKitServer;
+
+    async onConnect(
+        connection: Party.Connection,
+        ctx: Party.ConnectionContext
+    ) {
+        console.log("connection whaa happened");
+    }
+
+    async onClose(connection: Party.Connection) {
+        console.log("connection whaaa closed");
+    }
+
+    async onError(connection: Party.Connection, error: Error) {
+        console.log(error);
+    }
+}
