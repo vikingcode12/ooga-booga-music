@@ -6,7 +6,7 @@ import usePartySocket from "partysocket/react";
 const queryClient = new QueryClient();
 
 export default function App() {
-    const [videoId, setVideoId] = useState<string | null>("Z6dqIYKIBSU");
+    const [videoId, setVideoId] = useState<string | null>("u9n7Cw-4_HQ");
 
     const ws = usePartySocket({
         // usePartySocket takes the same arguments as PartySocket.
@@ -35,15 +35,18 @@ export default function App() {
                 <h1>Welcome to Ooga Booga Music</h1>
                 <h2>Spen!</h2>
                 {videoId != null && (
+                    // Replace with youtube player
+                    // https://developers.google.com/youtube/iframe_api_reference?hl=en#Playback_controls
                     <iframe
                         id="ytplayer"
                         width="640"
                         height="360"
-                        src={`https://www.youtube.com/embed/${videoId}??controls=0&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=https%3A%2F%2Fjukebox.today&widgetid=1`}
+                        src={`https://www.youtube.com/embed/${videoId}?controls=0&autoplay=1&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&widgetid=1&mute=1`}
+                        allow="autoplay"
                     ></iframe>
                 )}
                 <div>sio</div>
-                <Search setVideoId={setVideoId}></Search>
+                <Search setVideoId={setVideoId} webSocket={ws}></Search>
             </div>
         </QueryClientProvider>
     );

@@ -1,29 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
 import { Fragment } from "react";
 
 import type { youtubeAPI } from "./types";
+import PartySocket from "partysocket";
+import keys from "./keys.json";
 
 export function Search({
-    setVideoId
+    setVideoId,
+    webSocket
 }: {
     setVideoId: React.Dispatch<React.SetStateAction<string | null>>;
+    webSocket: PartySocket;
 }) {
     const [videoSearch, setVideoSearch] = useState("");
+    const [debouncedVideoSearch, setDebouncedVideoSearch] = useState("");
+    const [videoPlaying, setVideoPlaying] = useState("");
     const resultCount = 3;
 
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setDebouncedVideoSearch(videoSearch);
+        }, 150);
+
+        return () => clearTimeout(timeoutId);
+    }, [videoSearch]);
+
     const { isPending, error, data } = useQuery<youtubeAPI>({
-        queryKey: ["videoSearch", videoSearch],
+        queryKey: ["videoSearch", debouncedVideoSearch],
         queryFn: () =>
             fetch(
                 "https://www.googleapis.com/youtube/v3/search?" +
                     new URLSearchParams({
                         part: "snippet",
-                        q: videoSearch,
+                        q: debouncedVideoSearch,
                         maxResults: resultCount.toString(),
-                        key: "AIzaSyAsZGb-rqWdVaVW1mD7sS8nNi-UBI53V6g",
+                        key: keys[0],
                         type: "video"
                     })
             ).then(res => res.json()),
@@ -34,6 +48,7 @@ export function Search({
 
     return (
         <>
+            <div>{videoPlaying}</div>
             <input
                 type="text"
                 value={videoSearch}
@@ -42,23 +57,32 @@ export function Search({
                 }}
             />
             {/* Make a skeleton for no data or loading data */}
-            {isPending
-                ? [...Array(resultCount).keys()].map(item => (
-                      <Fragment key={item}>
-                          <h1>Load</h1>
-                          <p>Load Desc</p>
-                          <button>Load Button</button>
-                      </Fragment>
-                  ))
-                : data.items?.map(item => (
-                      <Fragment key={item.id.videoId}>
-                          <h1>{item.snippet.title}</h1>
-                          <p>{item.snippet.description}</p>
-                          <button onClick={() => setVideoId(item.id.videoId)}>
-                              honjk
-                          </button>
-                      </Fragment>
-                  ))}
+            {(
+                data?.items ??
+                [...Array(resultCount).keys()].map(index => ({
+                    id: {
+                        videoId: index
+                    },
+                    snippet: {
+                        title: "string",
+                        description: "string"
+                    }
+                }))
+            ).map(item => (
+                <Fragment key={item.id.videoId}>
+                    <h1>{item.snippet.title}</h1>
+                    <p>{item.snippet.description}</p>
+                    <button
+                        onClick={() => {
+                            webSocket.send(
+                                "Player has suggested " + item.snippet.title
+                            );
+                        }}
+                    >
+                        honjk
+                    </button>
+                </Fragment>
+            ))}
         </>
     );
 }

@@ -3,6 +3,16 @@ import type * as Party from "partykit/server";
 export default class Server implements Party.Server {
     constructor(readonly room: Party.Room) {}
 
+    private videoTitlequeue: {
+        name: string;
+        id: string;
+    }[] = [
+        {
+            name: "name",
+            id: "id"
+        }
+    ];
+
     async onStart() {
         console.log("start");
     }
@@ -11,7 +21,9 @@ export default class Server implements Party.Server {
         connection: Party.Connection,
         ctx: Party.ConnectionContext
     ) {
-        console.log("connection whaa happened");
+        this.room.broadcast(connection.id + " has connected");
+        connection.send("Current queue is " + this.videoTitlequeue.toString());
+        console.log(this.room);
     }
 
     async onClose(connection: Party.Connection) {
@@ -20,5 +32,10 @@ export default class Server implements Party.Server {
 
     async onError(connection: Party.Connection, error: Error) {
         console.log(error);
+    }
+
+    onMessage(message: string, sender: Party.Connection) {
+        // send the message to all connected clients
+        this.room.broadcast(`${sender.id} searched for ${message}`);
     }
 }
