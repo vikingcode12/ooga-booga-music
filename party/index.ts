@@ -1,7 +1,9 @@
 import type * as Party from "partykit/server";
 
 export default class Server implements Party.Server {
-    constructor(readonly room: Party.Room) {}
+    constructor(readonly room: Party.Room) {
+        console.log(room.id);
+    }
 
     private videoTitlequeue: {
         name: string;
@@ -23,11 +25,10 @@ export default class Server implements Party.Server {
     ) {
         this.room.broadcast(connection.id + " has connected");
         connection.send("Current queue is " + this.videoTitlequeue.toString());
-        console.log(this.room);
     }
 
     async onClose(connection: Party.Connection) {
-        console.log("connection whaaa closed");
+        console.log("connection closed");
     }
 
     async onError(connection: Party.Connection, error: Error) {

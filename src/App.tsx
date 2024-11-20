@@ -6,13 +6,16 @@ import usePartySocket from "partysocket/react";
 const queryClient = new QueryClient();
 
 export default function App() {
-    const [videoId, setVideoId] = useState<string | null>("u9n7Cw-4_HQ");
+    //"u9n7Cw-4_HQ"
+    const [videoId, setVideoId] = useState<string | null>("0");
+
+    const roomId = Math.floor(Math.random() * 100).toString();
+    console.log(roomId);
 
     const ws = usePartySocket({
         // usePartySocket takes the same arguments as PartySocket.
-        host: "ws://rp4r6d-1999.csb.app/", // or localhost:1999 in dev
-        room: "c-dog",
-
+        host: "ws://rp4r6d-33623.csb.app/", // or localhost:1999 in dev
+        room: roomId,
         // in addition, you can provide socket lifecycle event handlers
         // (equivalent to using ws.addEventListener in an effect hook)
         onOpen() {
@@ -45,8 +48,7 @@ export default function App() {
                         allow="autoplay"
                     ></iframe>
                 )}
-                <div>sio</div>
-                <Search setVideoId={setVideoId} webSocket={ws}></Search>
+                <Search setVideoId={setVideoId} ws={ws}></Search>
             </div>
         </QueryClientProvider>
     );

@@ -10,10 +10,10 @@ import keys from "./keys.json";
 
 export function Search({
     setVideoId,
-    webSocket
+    ws
 }: {
     setVideoId: React.Dispatch<React.SetStateAction<string | null>>;
-    webSocket: PartySocket;
+    ws: PartySocket;
 }) {
     const [videoSearch, setVideoSearch] = useState("");
     const [debouncedVideoSearch, setDebouncedVideoSearch] = useState("");
@@ -41,7 +41,7 @@ export function Search({
                         type: "video"
                     })
             ).then(res => res.json()),
-        enabled: videoSearch !== "" // This is so when videoSearch is blank to stop query from running
+        enabled: debouncedVideoSearch !== "" // This is so when videoSearch is blank to stop query from running
     });
 
     if (error) return "An error has occurred: " + error.message;
@@ -57,26 +57,30 @@ export function Search({
                 }}
             />
             {/* Make a skeleton for no data or loading data */}
-            {(
-                data?.items ??
-                [...Array(resultCount).keys()].map(index => ({
-                    id: {
-                        videoId: index
-                    },
-                    snippet: {
-                        title: "string",
-                        description: "string"
-                    }
-                }))
+            {/* When debounceSearch is different than the actual search results from videoSearch
+                We make sure that we're in skeleton instead of showing previous results even while typing
+                We could try using the new optimistic hooks in react */}
+            {(videoSearch === debouncedVideoSearch && data?.items
+                ? data.items
+                : [...Array(resultCount).keys()].map(index => ({
+                      id: {
+                          videoId: index
+                      },
+                      snippet: {
+                          title: "string",
+                          description: "string"
+                      }
+                  }))
             ).map(item => (
                 <Fragment key={item.id.videoId}>
                     <h1>{item.snippet.title}</h1>
                     <p>{item.snippet.description}</p>
                     <button
                         onClick={() => {
-                            webSocket.send(
+                            ws.send(
                                 "Player has suggested " + item.snippet.title
                             );
+                            // setVideoId(item.id.videoId);
                         }}
                     >
                         honjk
