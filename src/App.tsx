@@ -8,21 +8,25 @@ const queryClient = new QueryClient();
 export default function App() {
     //"u9n7Cw-4_HQ"
     const [videoId, setVideoId] = useState<string | null>("0");
-
-    const roomId = Math.floor(Math.random() * 100).toString();
-    console.log(roomId);
+    const [message, setMessages] = useState("");
 
     const ws = usePartySocket({
         // usePartySocket takes the same arguments as PartySocket.
-        host: "ws://rp4r6d-33623.csb.app/", // or localhost:1999 in dev
-        room: roomId,
+        host: import.meta.env.VITE_SERVER_URL, // or localhost:1999 in dev
+        room: "c-dog",
         // in addition, you can provide socket lifecycle event handlers
         // (equivalent to using ws.addEventListener in an effect hook)
         onOpen() {
             console.log("connected");
         },
         onMessage(e) {
-            console.log("message", e.data);
+            if (typeof e.data === "string") {
+                setMessages(JSON.stringify(e.data));
+                //console.log("message", e.data);
+            } else {
+                setMessages(JSON.stringify(e.data));
+                //console.log("message", JSON.stringify(e.data));
+            }
         },
         onClose() {
             console.log("closed");
@@ -48,6 +52,7 @@ export default function App() {
                         allow="autoplay"
                     ></iframe>
                 )}
+                <div>{message}</div>
                 <Search setVideoId={setVideoId} ws={ws}></Search>
             </div>
         </QueryClientProvider>

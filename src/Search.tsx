@@ -78,8 +78,12 @@ export function Search({
                     <button
                         onClick={() => {
                             ws.send(
-                                "Player has suggested " + item.snippet.title
+                                JSON.stringify({
+                                    name: item.id.videoId,
+                                    id: item.id.videoId
+                                })
                             );
+                            console.log("added item");
                             // setVideoId(item.id.videoId);
                         }}
                     >

@@ -24,7 +24,6 @@ export default class Server implements Party.Server {
         ctx: Party.ConnectionContext
     ) {
         this.room.broadcast(connection.id + " has connected");
-        connection.send("Current queue is " + this.videoTitlequeue.toString());
     }
 
     async onClose(connection: Party.Connection) {
@@ -37,6 +36,12 @@ export default class Server implements Party.Server {
 
     onMessage(message: string, sender: Party.Connection) {
         // send the message to all connected clients
-        this.room.broadcast(`${sender.id} searched for ${message}`);
+        const data = JSON.parse(message);
+        this.videoTitlequeue.push({
+            name: data.message,
+            id: data.id
+        });
+        console.log(this.videoTitlequeue);
+        this.room.broadcast(JSON.stringify(this.videoTitlequeue));
     }
 }
