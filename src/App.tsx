@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Search } from "./Search";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import usePartySocket from "partysocket/react";
@@ -13,6 +13,7 @@ export default function App() {
     const [player, setPlayer] = useState<YouTubePlayer>();
     const [videoId, setVideoId] = useState<string>("u9n7Cw-4_HQ"); // Turn into array of future videos
     const [message, setMessages] = useState("");
+    const lastState = useRef(0)
 
     const ws = usePartySocket({
         host: "https://humble-pancake-g655xpppgx92749-1999.app.github.dev/", // or localhost:1999 in dev
@@ -69,22 +70,41 @@ export default function App() {
                         })
                     );
                     setPlayer(e.target)
-                }} onPause={(e) => {
-                    ws.send(
-                        JSON.stringify({
-                            id: "videoInfo",
-                            playing: false,
-                            time: player.getCurrentTime(),
-                        })
-                    );
-                }} onPlay={(e) => {
-                    ws.send(
-                        JSON.stringify({
-                            id: "videoInfo",
-                            playing: true,
-                            time: player.getCurrentTime(),
-                        })
-                    );
+                }} onStateChange={(e) => {
+                    const state = e.target.getPlayerState();
+
+                    const PLAYER_STATE = {
+                        UNSTARTED: -1,
+                        ENDED: 0,
+                        PLAYING: 1,
+                        PAUSED: 2,
+                        BUFFERING: 3,
+                        CUED: 5
+                    };
+                    console.log("")
+                    console.log("")
+                    console.log(state)
+                    console.log(lastState.current)
+
+                    if (state === PLAYER_STATE.PLAYING  && lastState.current !== PLAYER_STATE.BUFFERING) {
+                        ws.send(
+                            JSON.stringify({
+                                id: "videoInfo",
+                                playing: true,
+                                time: player.getCurrentTime(),
+                            })
+                        );
+                    } else if (state === PLAYER_STATE.PAUSED) {
+                        ws.send(
+                            JSON.stringify({
+                                id: "videoInfo",
+                                playing: false,
+                                time: player.getCurrentTime(),
+                            })
+                        );
+                    }
+
+                    lastState.current = state
                 }}/>
                 <div>{message}</div>
                 <Search setVideoId={setVideoId} ws={ws}></Search>
