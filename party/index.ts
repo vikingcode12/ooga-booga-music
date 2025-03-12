@@ -5,16 +5,6 @@ export default class Server implements Party.Server {
         console.log(room.id);
     }
 
-    private videoTitlequeue: {
-        name: string;
-        id: string;
-    }[] = [
-        {
-            name: "name",
-            id: "id"
-        }
-    ];
-
     async onStart() {
         console.log("start");
     }
@@ -23,7 +13,7 @@ export default class Server implements Party.Server {
         connection: Party.Connection,
         ctx: Party.ConnectionContext
     ) {
-        this.room.broadcast(connection.id + " has connected");
+        this.room.broadcast(JSON.stringify(connection.id + " has connected"));
     }
 
     async onClose(connection: Party.Connection) {
@@ -37,11 +27,6 @@ export default class Server implements Party.Server {
     onMessage(message: string, sender: Party.Connection) {
         // send the message to all connected clients
         const data = JSON.parse(message);
-        this.videoTitlequeue.push({
-            name: data.message,
-            id: data.id
-        });
-        console.log(this.videoTitlequeue);
-        this.room.broadcast(JSON.stringify(this.videoTitlequeue));
+        this.room.broadcast(JSON.stringify(data));
     }
 }

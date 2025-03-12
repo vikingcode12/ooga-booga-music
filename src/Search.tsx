@@ -79,12 +79,11 @@ export function Search({
                         onClick={() => {
                             ws.send(
                                 JSON.stringify({
-                                    name: item.id.videoId,
-                                    id: item.id.videoId
+                                    id: "videoId",
+                                    videoId: item.id.videoId,
                                 })
                             );
-                            console.log("added item");
-                            // setVideoId(item.id.videoId);
+                            setVideoId(item.id.videoId);
                         }}
                     >
                         honjk

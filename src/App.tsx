@@ -7,27 +7,24 @@ const queryClient = new QueryClient();
 
 export default function App() {
     //"u9n7Cw-4_HQ"
-    const [videoId, setVideoId] = useState<string | null>("0");
+    const [videoId, setVideoId] = useState<string>("");
     const [message, setMessages] = useState("");
 
-    console.log(new URL(document.location.toString()).searchParams.get("room") ?? "main")
-
     const ws = usePartySocket({
-        // usePartySocket takes the same arguments as PartySocket.
         host: "https://humble-pancake-g655xpppgx92749-1999.app.github.dev/", // or localhost:1999 in dev
         room: new URL(document.location.toString()).searchParams.get("room") ?? "main",
-        // in addition, you can provide socket lifecycle event handlers
-        // (equivalent to using ws.addEventListener in an effect hook)
         onOpen() {
             console.log("connected");
         },
         onMessage(e) {
-            if (typeof e.data === "string") {
-                setMessages(JSON.stringify(e.data));
-                //console.log("message", e.data);
-            } else {
-                setMessages(JSON.stringify(e.data));
-                //console.log("message", JSON.stringify(e.data));
+            console.log(e.data)
+            const data = JSON.parse(e.data)
+            console.log(data)
+
+            if (typeof data === "string") return setMessages(data);
+
+            if (data.id === "videoId") {
+                return setVideoId(data.videoId)
             }
         },
         onClose() {
