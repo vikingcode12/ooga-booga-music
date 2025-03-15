@@ -1,5 +1,5 @@
 {
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "./party/*", "./types/*"],
   "compilerOptions": {
     "target": "ES2020",
     "module": "Preserve",
