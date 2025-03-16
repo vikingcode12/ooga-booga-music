@@ -28,6 +28,7 @@ export default function App() {
   const lastState = useRef(0);
   const isRemoteChange = useRef(false);
   const isBuffering = useRef(false);
+  const seekTo = useRef(0);
   
   // Time sync tolerance (in seconds)
   const TIME_SYNC_TOLERANCE = 2;
@@ -104,8 +105,10 @@ export default function App() {
 
           // Apply play/pause state
           if (playing) {
+            console.log("SEEKEND")
+            seekTo.current = time + timeDiff * 1.05
             player.seekTo(time + timeDiff * 1.05, true);
-            player.playVideo();  
+            player.playVideo();
             setSyncStatus("Playback resumed");
           } else {
             player.seekTo(time, true);
@@ -172,16 +175,19 @@ export default function App() {
             width: "640",
           }} 
           onReady={(e) => {
-            setPlayer(e.target);
+            console.log("TIS READY")
+            player.seekTo(seekTo.current)
             // Send initial state when player is ready
             ws.send(
               JSON.stringify({
                 id: "videoInfo",
                 playing: false,
                 time: 0,
-                buffering: false
-              })
+                buffering: false,
+                start: true
+              } as VideoInfoMessage)
             );
+            setPlayer(e.target);
           }} 
           onStateChange={(e) => {
             const state = e.target.getPlayerState();
@@ -208,7 +214,7 @@ export default function App() {
                     id: "videoInfo",
                     playing: true,
                     time: e.target.getCurrentTime()
-                  })
+                  } as VideoInfoMessage)
                 );
               } else if (state === PLAYER_STATE.PAUSED) {
                 ws.send(
@@ -216,18 +222,12 @@ export default function App() {
                     id: "videoInfo",
                     playing: false,
                     time: e.target.getCurrentTime()
-                  })
+                  } as VideoInfoMessage)
                 );
               }
             }
             
             lastState.current = state;
-          }}
-          onPlay={() => {
-            // Additional handler if needed
-          }}
-          onPause={() => {
-            // Additional handler if needed
           }}
           onEnd={() => {
             // Handle video end

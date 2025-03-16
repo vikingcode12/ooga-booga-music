@@ -41,9 +41,13 @@ export default class Server implements Party.Server {
     
     // Notify everyone about the new connection
     this.room.broadcast(JSON.stringify(`${connection.id} has connected`));
+    console.log(`${connection.id} has connected`)
     
     // Send current state to the new user
+    console.log(this.currentState.videoId)
+    console.log(this.currentState)
     if (this.currentState.videoId) {
+      console.log("id")
       connection.send(JSON.stringify({
         id: "videoId",
         videoId: this.currentState.videoId
@@ -54,8 +58,9 @@ export default class Server implements Party.Server {
         id: "videoInfo",
         playing: this.currentState.playing,
         time: this.currentState.time,
-        syncSequence: true // Indicates this is part of an initial sync sequence
       } as VideoInfoMessage));
+    } else {
+      this.currentState.videoId = "7bK5EPjGri4" // Default
     }
   }
 
@@ -108,6 +113,15 @@ export default class Server implements Party.Server {
             const userState = this.users.get(sender.id);
             if (userState) {
               userState.buffering = data.buffering;
+
+              if (data?.start) {
+                console.log("BURHHHHHHHHHHHHHh")
+                return sender.send(JSON.stringify({
+                  id: "videoInfo",
+                  playing: this.currentState.playing,
+                  time: this.currentState.time,
+                } as VideoInfoMessage));
+              }
               
               // If any user is buffering, pause for everyone
               if (data.buffering) {
@@ -138,6 +152,7 @@ export default class Server implements Party.Server {
             }
           } else {
             // Update stored state with latest info
+            console.log(data.time, sender.id)
             this.currentState.playing = data.playing;
             this.currentState.time = data.time;
           }
